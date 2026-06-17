@@ -8,6 +8,7 @@ config/mi-negocio.yaml
 
 # Artefactos de build generados durante la instalación
 payload.json
+payload.definition.json
 *.rendered.md
 *.rendered.json
 

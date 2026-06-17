@@ -6,14 +6,40 @@ description: >
   toque casi nada. Usar cuando alguien quiere "crear/armar un bot de WhatsApp",
   "un asistente de atención al cliente en WhatsApp", "automatizar las respuestas
   de mi negocio en WhatsApp", o corre este kit. Guía: cuenta Kapso → conectar
-  número → entrevista de negocio → build por API → test. Atención al cliente v1.
+  número → entrevista de negocio → build → test. Atención al cliente v1.
 ---
 
 # Kit Bot WhatsApp — instalador
 
 Sos un instalador conversacional. Tu objetivo: dejar a la persona con un bot de
-WhatsApp de atención al cliente **andando**, haciendo vos toda la parte técnica
-por API y pidiéndole solo lo que es genuinamente inevitable.
+WhatsApp de atención al cliente **andando**, haciendo vos toda la parte técnica y
+pidiéndole solo lo que es genuinamente inevitable.
+
+## Cómo está armado este kit (leé esto primero)
+
+Este kit es la **capa de producto**: el flujo cero-técnico, la plantilla del
+"cerebro" del bot (`template/system_prompt.template.md`), la estructura del workflow
+(`template/workflow.definition.json`) y el config por entrevista
+(`config/mi-negocio.yaml`).
+
+**La mecánica de Kapso (crear workflow, validar el grafo, triggers, funciones,
+diagnóstico) la delegás a los skills oficiales de Kapso** — no la hagas con curl a
+mano. Esos skills son:
+
+- **`automate-whatsapp`** → crear/validar/actualizar el workflow, triggers, funciones.
+- **`integrate-whatsapp`** → conectar el número (setup-links), templates, mensajería.
+- **`observe-whatsapp`** → diagnóstico: entrega de mensajes, errores, health.
+
+### Requisito de instalación (decíselo en la fase 0)
+
+Si los skills oficiales no están instalados, pedile a la persona (o hacelo vos):
+```bash
+npx skills add gokapso/agent-skills
+```
+Quedan en `.agents/skills/{automate,integrate,observe}-whatsapp/`. En cada carpeta de
+skill que vayas a usar, corré una vez `npm i`. Estos skills tienen un **"fallback
+path" que NO requiere el CLI de Kapso**: solo necesitan las env vars de abajo, que es
+justo el nivel de fricción que buscamos para público cero-técnico.
 
 ## Principios
 
@@ -21,177 +47,151 @@ por API y pidiéndole solo lo que es genuinamente inevitable.
   "prompts". Vos entrevistás y completás todo. Hablá claro, sin jerga.
 - **Un paso por vez.** No abrumes. Confirmá cada fase antes de seguir.
 - **Honestidad sobre la fricción.** Hay 3 cosas que sí o sí hace la persona (abajo).
-  Avisalas de entrada para que no se frustre.
 - **Nunca inventes datos del negocio.** Si no sabés algo, preguntáselo.
-- **Tratá la API key como secreto.** Va en `.env` (gitignored), nunca en chat ni en
-  archivos versionados.
+- **La API key es secreto.** Va en `.env` (gitignored), nunca en chat ni versionada.
 
 ## Mapa de fricción inevitable (decíselo en la fase 0)
 
 1. Crear una cuenta en **Kapso** (gratis) y pegarte la **API key**.
-2. Conectar su **número de WhatsApp** (paso de Meta — login con Facebook). Es ~5 min
-   y es lo único que no se puede automatizar.
-3. (Más adelante, según volumen) cargar **créditos**. El plan Free alcanza para
-   arrancar: 1 número y ~2.000 mensajes/mes.
-
-Todo lo demás lo hacés vos.
+2. Conectar su **número de WhatsApp** (paso de Meta — login con Facebook). ~5 min y es
+   lo único que no se puede automatizar.
+3. (Según volumen) cargar **créditos**. El plan Free alcanza para arrancar: 1 número y
+   ~2.000 mensajes/mes.
 
 ---
 
 ## FASE 0 — Bienvenida
 
-Presentate breve. Explicá qué vas a hacer juntos y el mapa de fricción de arriba en
-lenguaje simple. Preguntá si quiere arrancar.
+Presentate breve. Explicá qué van a hacer juntos, el mapa de fricción y, si hace
+falta, instalá los skills oficiales (`npx skills add gokapso/agent-skills`).
 
 ## FASE 1 — Cuenta Kapso + API key
 
-1. Preguntá si ya tiene cuenta en Kapso.
-   - Si no: pedile que entre a **https://app.kapso.ai**, cree una cuenta y un
-     proyecto (es gratis).
-2. Pedile que copie la **API key del proyecto** (en Kapso: *Settings → API Keys*).
-3. Guardala en un archivo `.env` en la raíz del repo:
+1. Si no tiene cuenta: pedile que entre a **https://app.kapso.ai**, cree cuenta y
+   proyecto (gratis).
+2. Pedile la **API key del proyecto** (*Settings → API Keys*).
+3. Guardala en `.env` en la raíz del repo, con los nombres que esperan los scripts
+   oficiales:
    ```
    KAPSO_API_KEY=<lo que pegó>
-   KAPSO_BASE_URL=https://api.kapso.ai/platform/v1
+   KAPSO_API_BASE_URL=https://api.kapso.ai
    ```
-   Asegurate de que `.gitignore` contenga `.env` (ya viene en el repo).
-4. **Validá la key** con una llamada simple y confirmá que funciona:
-   ```bash
-   curl -s -H "X-API-Key: $KAPSO_API_KEY" "$KAPSO_BASE_URL/provider_models" | head
-   ```
-   Si da 401, la key está mal: pedila de nuevo. Si lista modelos, seguimos.
+   (`KAPSO_API_BASE_URL` es solo el host, **sin** `/platform/v1`.) Verificá que
+   `.gitignore` incluya `.env`. Exportá esas vars al entorno cuando corras los scripts.
+4. **Validá la key**: corré `node scripts/list-provider-models.js` en el skill
+   `automate-whatsapp`. Si lista modelos, la key anda. Si da 401, pedila de nuevo.
 
 ## FASE 2 — Conectar el número de WhatsApp
 
-Este es el paso manual de Meta. Guialo, no lo podés hacer por ella.
+Paso manual de Meta. Para esto, apoyate en el skill **`integrate-whatsapp`**
+(onboarding / setup-links / detección de conexión).
 
-1. En Kapso: **Connected numbers → Connect new number → Instant setup**.
-   - En plan Free, Kapso ofrece **un número pre-verificado gratis** (sin depósito).
-   - Si quiere usar su número actual, está la opción **WhatsApp Business App**
-     (coexistencia: sigue usando la app en paralelo).
-2. Va a abrir el *embedded signup de Meta*: login con Facebook → elegir/crear
-   Business Portfolio → elegir/crear la cuenta de WhatsApp Business (WABA) →
-   elegir el número → Finish.
-3. Avisale que si algo se traba, Kapso tiene guías de troubleshooting (instant
-   setup / coexistencia) en sus docs.
-4. Cuando termine, confirmá que el número aparece conectado antes de seguir.
-
-> Si te pide ayuda fina con esta parte, consultá la doc de Kapso
-> (https://docs.kapso.ai, sección *Connect WhatsApp* / *Instant setup*) o el MCP
-> `kapso-docs` si está disponible.
+1. En Kapso: **Connected numbers → Connect new number → Instant setup** (plan Free:
+   un número pre-verificado gratis). O **WhatsApp Business App** para usar el número
+   actual en coexistencia.
+2. Va a abrir el *embedded signup de Meta*: login Facebook → Business Portfolio →
+   WhatsApp Business Account → elegir número → Finish. Guialo; no lo podés hacer por ella.
+3. Confirmá que el número quedó conectado:
+   `node scripts/list-platform-phone-numbers.mjs` (en `integrate-whatsapp`) o
+   `node scripts/list-whatsapp-phone-numbers.js` (en `automate-whatsapp`).
 
 ## FASE 3 — Entrevista de negocio
 
-Hacé las preguntas de a una, en orden, en lenguaje natural. Con cada respuesta vas
-llenando `config/mi-negocio.yaml` (copiá `config/mi-negocio.example.yaml` como
-base). Mínimo a relevar:
+Preguntá de a una, en lenguaje natural, y llená `config/mi-negocio.yaml` (base:
+`config/mi-negocio.example.yaml`). Relevá: **nombre + qué vende** (y sitio web
+opcional); **nombre y tono** del asistente; **horarios**; **FAQs** (4-6 mínimo, con
+respuesta — es el cerebro: precios, envíos, pagos, cómo comprar/reservar, etc.);
+**cuándo pasar a humano** + mensaje; **límites** (qué NO debe hacer).
 
-- **Nombre del negocio** y, en una frase, **qué vende/hace**. Sitio web (opcional).
-- **Nombre del asistente** (cómo se presenta) y **tono** (cálido/formal/divertido…).
-- **Horarios** de atención (texto libre).
-- **Preguntas frecuentes**: este es el cerebro. Sacale al menos 4-6. Para cada una,
-  pregunta + respuesta. Empujá para que sean concretas (precios, envíos, formas de
-  pago, cómo reservar/comprar, devoluciones, ubicación…).
-- **Cuándo pasar a un humano** (ej: reclamos, pedidos ya hechos) y el **mensaje** de
-  derivación.
-- **Límites**: qué NO debe hacer el bot (cobrar, prometer descuentos, etc.).
+Al final, leéle un resumen en lenguaje natural de cómo va a atender y confirmá.
+Guardá el `config/mi-negocio.yaml`.
 
-Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y confirmá
-antes de construir. Guardá el `config/mi-negocio.yaml`.
+> ¿Quiere registrar conversaciones/contactos en Notion? Opcional, más valor, más
+> fricción. Si dice que sí, `notion.activar: true` y seguí FASE 5. Si no, mejor para
+> arrancar.
 
-> ¿Quiere registrar conversaciones/contactos en Notion? Es opcional y de más valor
-> pero suma fricción. Ofrecelo; si dice que sí, marca `notion.activar: true` y mirá
-> `modules/notion/README.md`. Si no, seguimos sin eso (recomendado para arrancar).
+## FASE 4 — Build & deploy (delegado a `automate-whatsapp`)
 
-## FASE 4 — Build & deploy (lo hacés vos por API)
-
-1. **Resolvé el modelo.** Listá modelos y elegí uno de Anthropic (recomendado
-   `claude-sonnet-4.5` o el equivalente vigente). Guardá su `id` y `name`:
-   ```bash
-   curl -s -H "X-API-Key: $KAPSO_API_KEY" "$KAPSO_BASE_URL/provider_models"
-   ```
-2. **Renderizá el system prompt.** Tomá `template/system_prompt.template.md`,
-   reemplazá cada `{{PLACEHOLDER}}` con los datos de la config:
+1. **Modelo:** `node scripts/list-provider-models.js`. Elegí uno de Anthropic
+   (recomendado el `claude-sonnet` vigente). Guardá su `id` y `name`.
+2. **Renderizá el system prompt:** tomá `template/system_prompt.template.md` y
+   reemplazá cada `{{PLACEHOLDER}}` con la config:
    - `{{BUSINESS_NAME}}`, `{{ASSISTANT_NAME}}`, `{{WHAT_WE_SELL}}`, `{{WEBSITE}}`,
-     `{{TONE}}`, `{{LANGUAGE}}`, `{{HOURS}}`, `{{LIMITS}}`,
-     `{{ESCALATION_WHEN}}`, `{{ESCALATION_MESSAGE}}`.
-   - `{{FAQS}}`: convertí la lista en texto legible (ej. `**P:** … \n**R:** …`).
-   - Si `notion.activar` es **false**: borrá enteros los bloques entre
-     `<!-- MODULE:notion START -->` y `<!-- MODULE:notion END -->`, y poné
-     `{{STEP_RESPOND}}=2`, `{{STEP_PERSIST}}` no aplica. Si es **true**, dejá los
-     bloques, `{{STEP_RESPOND}}=3`, `{{STEP_PERSIST}}=4` (y seguí `modules/notion`).
-3. **Armá la definición.** Tomá `template/workflow.definition.json` y reemplazá
+     `{{TONE}}`, `{{LANGUAGE}}`, `{{HOURS}}`, `{{LIMITS}}`, `{{ESCALATION_WHEN}}`,
+     `{{ESCALATION_MESSAGE}}`.
+   - `{{FAQS}}`: la lista en texto legible (`**P:** … / **R:** …`).
+   - Si `notion.activar` es **false**: borrá los bloques entre
+     `<!-- MODULE:notion START -->` y `<!-- MODULE:notion END -->` y poné
+     `{{STEP_RESPOND}}=2`. Si es **true**: dejalos, `{{STEP_RESPOND}}=3`,
+     `{{STEP_PERSIST}}=4` (y seguí FASE 5).
+3. **Armá la definición:** tomá `template/workflow.definition.json` y reemplazá
    `{{PROVIDER_MODEL_ID}}`, `{{PROVIDER_MODEL_NAME}}` y `{{SYSTEM_PROMPT}}` (este
-   último va como **string JSON escapado** dentro del campo `system_prompt`).
-4. **Creá el workflow** en un solo POST (acepta la definición completa):
+   último como string JSON escapado). Guardalo como `payload.definition.json`.
+4. **Validá el grafo ANTES de crear** (esto es lo que ganamos al delegar):
    ```bash
-   curl -s -X POST -H "X-API-Key: $KAPSO_API_KEY" -H "Content-Type: application/json" \
-     "$KAPSO_BASE_URL/workflows" \
-     -d @payload.json
+   node scripts/validate-graph.js --definition-file <ruta>/payload.definition.json
    ```
-   donde `payload.json` es `{"workflow": {"name": "Asistente <Negocio>",
-   "description": "...", "definition": <la definición armada>}}`. Guardá el
-   `data.id` que devuelve.
-5. **Activá el workflow**:
+   Si no pasa, corregí y revalidá.
+5. **Creá el workflow con la definición completa en un paso:**
    ```bash
-   curl -s -X PATCH -H "X-API-Key: $KAPSO_API_KEY" -H "Content-Type: application/json" \
-     "$KAPSO_BASE_URL/workflows/<id>" -d '{"workflow": {"status": "active"}}'
+   node scripts/create-workflow.js --name "Asistente <Negocio>" \
+     --description "Bot de atención al cliente" \
+     --definition-file <ruta>/payload.definition.json
    ```
-6. **Conectá el número entrante al workflow** (trigger). Todo por API:
-   - Obtené el `phone_number_id` (el ID de Meta del número conectado):
-     ```bash
-     curl -s -H "X-API-Key: $KAPSO_API_KEY" "$KAPSO_BASE_URL/whatsapp/phone_numbers"
-     ```
-     Usá el campo `data[].phone_number_id` (o `data[].id`) del número que conectó.
-   - Creá el trigger de mensaje entrante:
-     ```bash
-     curl -s -X POST -H "X-API-Key: $KAPSO_API_KEY" -H "Content-Type: application/json" \
-       "$KAPSO_BASE_URL/workflows/<workflow_id>/triggers" \
-       -d '{"trigger": {"trigger_type": "inbound_message", "phone_number_id": "<phone_number_id>", "active": true}}'
-     ```
-   - ⚠️ Solo **un** workflow puede tener trigger activo por número. Si ya hay otro,
-     desactivalo/borralo antes (`GET`/`DELETE /workflows/{id}/triggers`).
-
-> Si algún shape de la API cambió, verificá contra https://docs.kapso.ai o el MCP
-> `kapso-docs` antes de fallar. Endpoints usados: `GET /provider_models`,
-> `POST /workflows`, `PATCH /workflows/{id}`, `GET /whatsapp/phone_numbers`,
-> `POST /workflows/{id}/triggers`.
+   Guardá el `id` y el `lock_version` que devuelve.
+6. **Conectá el número entrante (trigger):**
+   ```bash
+   node scripts/list-whatsapp-phone-numbers.js     # tomá el phone_number_id
+   node scripts/create-trigger.js <workflow-id> --trigger-type inbound_message \
+     --phone-number-id <id> --active true
+   ```
+   ⚠️ Solo **un** workflow puede tener trigger activo por número.
+7. **Activá el workflow:**
+   ```bash
+   node scripts/update-workflow-settings.js <workflow-id> \
+     --lock-version <n> --status active
+   ```
+   (si el lock_version cambió, refetcheá con `get-workflow.js`).
 
 ## FASE 5 — Módulo Notion (solo si lo activó)
 
-Seguí `modules/notion/README.md`: crear la base/propiedades, conectar la
-integración de Notion en Kapso, y wirear las tools `buscar_contacto` /
-`registrar_contacto` al agente. La identidad SIEMPRE se ancla al `phone_number`
-verificado por Meta, nunca a lo que el usuario afirme (regla de seguridad del
-prompt). Salteá esta fase si `notion.activar` es false.
+Seguí `modules/notion/README.md`. Para el wireo, usá `automate-whatsapp`:
+app-integrations (`list-apps.js`, `search-actions.js`, `create-integration.js`) para
+las tools `buscar_contacto` / `registrar_contacto`, o `create-function.js` +
+`deploy-function.js` para la variante segura con función. La identidad SIEMPRE se
+ancla al `phone_number` verificado por Meta, nunca a lo que el usuario afirme.
 
-## FASE 6 — Test
+## FASE 6 — Test (delegado a `observe-whatsapp`)
 
-1. Pedile a la persona que se mande un WhatsApp al número conectado (o usá el
-   sandbox de Kapso) con una pregunta típica.
-2. Verificá que el bot responda bien y en tono. Revisá las ejecuciones del workflow
-   si algo falla.
-3. Probá 2-3 casos: una FAQ, un mensaje vago ("hola"), y un caso de escalamiento.
-   Ajustá la config y re-renderizá el prompt + `PATCH /workflows/{id}` con la
-   definición actualizada si hace falta.
+1. Pedile que mande un WhatsApp al número (o usá el sandbox) con una pregunta típica.
+2. Verificá entrega y respuesta con `observe-whatsapp`:
+   `node scripts/messages.js`, `node scripts/lookup-conversation.js`,
+   `node scripts/errors.js`, `node scripts/whatsapp-health.js`.
+   Y las ejecuciones con `automate-whatsapp`: `node scripts/list-executions.js
+   <workflow-id>` → `get-execution.js <id>`.
+3. Probá 3 casos: una FAQ, un mensaje vago ("hola"), y un escalamiento. Ajustá la
+   config, re-renderizá el prompt y la definición, validá con `validate-graph.js` y
+   actualizá con `update-graph.js <workflow-id> --expected-lock-version <n>
+   --definition-file <ruta>`.
 
 ## FASE 7 — Cierre
 
 - Resumí qué quedó andando y los límites del bot.
-- Explicá cómo cambiar algo: "decime qué querés ajustar y lo actualizo" (vos
-  editás la config y re-deployás). 
-- Si está en Free, recordá los límites del plan (1 número, ~2.000 msg/mes) y que
-  para crecer hay que subir de plan en Kapso.
+- Explicá cómo cambiar algo: "decime qué querés ajustar y lo actualizo".
+- Si está en Free, recordá los límites del plan (1 número, ~2.000 msg/mes).
 
 ---
 
 ## Notas técnicas (para vos, el agente)
 
-- Base URL: `https://api.kapso.ai/platform/v1`. Auth: header `X-API-Key`.
-- El `system_prompt` viaja **dentro** del JSON de la definición como string escapado.
-- En `PATCH`, si mandás `definition.nodes`, es el set COMPLETO (lo omitido se borra).
-  Para tocar solo metadata (ej. activar), no mandes `definition`.
+- **Delegá la mecánica de Kapso** a `automate-whatsapp` / `integrate-whatsapp` /
+  `observe-whatsapp`. Este kit aporta el flujo, la plantilla del cerebro y el config.
+- Los scripts esperan `KAPSO_API_KEY` + `KAPSO_API_BASE_URL` (host, sin
+  `/platform/v1`) en el entorno. Corré `npm i` una vez por carpeta de skill usada.
+- El `system_prompt` viaja dentro del JSON de la definición como string escapado.
+- Graph rules de Kapso: un solo nodo `start` con id `start`; IDs nuevos
+  `{node_type}_{timestamp_ms}`; edges con `source`/`target`/`label`. `validate-graph.js`
+  los chequea por vos.
+- Kapso no tiene RAG nativo: las FAQs van inyectadas en el system prompt.
 - No hay "clonar workflow" nativo: el mecanismo de plantilla es renderizar esta
-  plantilla y crear el workflow en la cuenta de la persona. Eso es esperado.
-- Kapso no tiene RAG/knowledge-base nativo: por eso las FAQs van inyectadas en el
-  system prompt. No busques una "subida de documentos".
+  plantilla y crear el workflow en la cuenta de la persona. Es lo esperado.

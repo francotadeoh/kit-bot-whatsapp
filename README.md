@@ -20,7 +20,10 @@ WhatsApp con la IA) y se instala conversando con [Claude Code](https://claude.co
 
 1. La **app de Claude Code** (escritorio) — no hace falta saber usar la terminal.
 2. Una cuenta gratis en **Kapso** + tu número de WhatsApp.
-3. 15 minutos.
+3. Los **skills oficiales de Kapso** (el kit te los instala con
+   `npx skills add gokapso/agent-skills`): son los que hacen el trabajo pesado de
+   conectar y configurar. El kit los usa por debajo.
+4. 15 minutos.
 
 Hay **3 pasos que sí o sí hacés vos** (el resto lo hace el kit):
 crear la cuenta de Kapso, conectar tu número (un login de Facebook, ~5 min), y

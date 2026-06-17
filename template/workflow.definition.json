@@ -43,7 +43,7 @@
           "sandbox_enabled": false,
           "sandbox_network_mode": "allow_all",
           "system_prompt": "{{SYSTEM_PROMPT}}",
-          "temperature": "0.5"
+          "temperature": 0.5
         },
         "display_name": "Asistente",
         "node_type": "agent"
