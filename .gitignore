@@ -1,0 +1,16 @@
+# Secretos — NUNCA versionar
+.env
+.env.*
+!.env.example
+
+# Config del negocio del usuario (puede tener datos sensibles)
+config/mi-negocio.yaml
+
+# Artefactos de build generados durante la instalación
+payload.json
+*.rendered.md
+*.rendered.json
+
+# Sistema
+.DS_Store
+node_modules/

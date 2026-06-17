@@ -1,0 +1,56 @@
+{
+  "edges": [
+    {
+      "label": "next",
+      "source": "start",
+      "target": "agent_main"
+    }
+  ],
+  "nodes": [
+    {
+      "data": {
+        "config": {},
+        "node_type": "start"
+      },
+      "id": "start",
+      "position": { "x": 100, "y": 100 },
+      "type": "flow-node"
+    },
+    {
+      "data": {
+        "config": {
+          "enabled_default_tools": [
+            "send_media",
+            "get_whatsapp_context",
+            "get_current_datetime",
+            "complete_task",
+            "handoff_to_human",
+            "enter_waiting"
+          ],
+          "flow_agent_app_integration_tools": [],
+          "flow_agent_function_tools": [],
+          "flow_agent_knowledge_bases": [],
+          "flow_agent_mcp_servers": [],
+          "flow_agent_resources": [],
+          "flow_agent_webhooks": [],
+          "max_iterations": 15,
+          "max_tokens": 8192,
+          "observer_prompt_mode": "analysis_only",
+          "provider_model_id": "{{PROVIDER_MODEL_ID}}",
+          "provider_model_name": "{{PROVIDER_MODEL_NAME}}",
+          "reasoning_effort": null,
+          "sandbox_allowed_outbound_hosts": [],
+          "sandbox_enabled": false,
+          "sandbox_network_mode": "allow_all",
+          "system_prompt": "{{SYSTEM_PROMPT}}",
+          "temperature": "0.5"
+        },
+        "display_name": "Asistente",
+        "node_type": "agent"
+      },
+      "id": "agent_main",
+      "position": { "x": 400, "y": 100 },
+      "type": "flow-node"
+    }
+  ]
+}
