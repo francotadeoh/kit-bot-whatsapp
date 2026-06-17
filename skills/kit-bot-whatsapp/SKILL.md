@@ -171,6 +171,10 @@ Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y conf
      `<!-- MODULE:notion START -->` y `<!-- MODULE:notion END -->` y poné
      `{{STEP_RESPOND}}=2`. Si es **true**: dejalos, `{{STEP_RESPOND}}=3`,
      `{{STEP_PERSIST}}=4` (y seguí FASE 5).
+   - **Remové TODOS los comentarios HTML** (`<!-- ... -->`) del resultado: son
+     notas de autoría/plantilla y NO deben llegar al cerebro del bot (incluye el
+     comentario del tope). Verificá que no quede ningún `{{...}}` ni `MODULE:notion`
+     en el texto final.
 3. **Armá la definición:** tomá `template/workflow.definition.json` y reemplazá
    `{{PROVIDER_MODEL_ID}}`, `{{PROVIDER_MODEL_NAME}}` y `{{SYSTEM_PROMPT}}` (este
    último como string JSON escapado). Guardalo como `payload.definition.json`.

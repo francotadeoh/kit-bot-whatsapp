@@ -1,11 +1,12 @@
 # Asistente de WhatsApp de {{BUSINESS_NAME}}
 
 <!--
-  Esta es la PLANTILLA del cerebro del bot. El Skill la rellena con los datos
-  de config/mi-negocio.yaml y reemplaza cada {{PLACEHOLDER}}.
-  Los bloques entre <!-- MODULE:notion ... --> solo se incluyen si activás
-  el módulo Notion en la config. Si no, se borran enteros.
-  NO la edites a mano salvo que sepas lo que hacés.
+  PLANTILLA del cerebro del bot. El Skill la rellena con los datos de
+  config/mi-negocio.yaml, reemplaza cada placeholder, y al final REMUEVE todos
+  los comentarios HTML (este incluido) antes de mandarla a Kapso.
+  Los bloques marcados MODULE:notion (con sus pares START / END) solo se
+  incluyen si se activa el módulo Notion; si no, se borran enteros.
+  No editar a mano salvo que sepas lo que hacés.
 -->
 
 # 🔴 PROTOCOLO DE CADA TURNO (leé esto antes que nada)
