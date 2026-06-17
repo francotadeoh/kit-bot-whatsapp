@@ -5,6 +5,7 @@
 
 # Config del negocio del usuario (puede tener datos sensibles)
 config/mi-negocio.yaml
+skills/kit-bot-whatsapp/config/mi-negocio.yaml
 
 # Artefactos de build generados durante la instalación
 payload.json

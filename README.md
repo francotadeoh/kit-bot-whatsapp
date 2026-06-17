@@ -20,10 +20,7 @@ WhatsApp con la IA) y se instala conversando con [Claude Code](https://claude.co
 
 1. La **app de Claude Code** (escritorio) — no hace falta saber usar la terminal.
 2. Una cuenta gratis en **Kapso** + tu número de WhatsApp.
-3. Los **skills oficiales de Kapso** (el kit te los instala con
-   `npx skills add gokapso/agent-skills`): son los que hacen el trabajo pesado de
-   conectar y configurar. El kit los usa por debajo.
-4. 15 minutos.
+3. ~15 minutos.
 
 Hay **3 pasos que sí o sí hacés vos** (el resto lo hace el kit):
 crear la cuenta de Kapso, conectar tu número (un login de Facebook, ~5 min), y
@@ -32,28 +29,44 @@ crear la cuenta de Kapso, conectar tu número (un login de Facebook, ~5 min), y
 
 ## Cómo se usa
 
-1. **Cloná o descargá este repo** y abrilo con Claude Code.
-2. Pedile: **"armá mi bot de WhatsApp"** (o corré el skill `kit-bot-whatsapp`).
-3. Seguí la conversación: el kit te guía para conectar tu número, te entrevista
-   sobre tu negocio, construye el bot y lo prueba con vos.
+**Un comando, y después solo hablás.**
+
+1. Instalá el kit (copiá y pegá esta línea una vez):
+   ```bash
+   npx skills add francotadeoh/kit-bot-whatsapp
+   ```
+2. Abrí Claude Code y decile (podés por **audio**): **"armá mi bot de WhatsApp"**.
+3. Seguí la conversación: el kit instala solo lo que necesita de Kapso, te guía para
+   conectar tu número, te **entrevista sobre tu negocio** (le dictás, él arma la
+   config), construye el bot, lo conecta y lo prueba con vos.
 
 Eso es todo. Para cambiar algo después (sumar una FAQ, cambiar el tono), volvé a
 abrir Claude Code y decile qué querés ajustar.
+
+> **¿Hiciste el programa La Instalación?** Si ya tenés tu negocio ordenado en Notion
+> (Centro de Comando) y un procedimiento de atención escrito, decíselo al kit cuando
+> te pregunte: usa eso de base — tus procesos se vuelven las respuestas del bot y tu
+> Centro de Comando se vuelve su memoria. No empezás de cero.
 
 ## Qué hay adentro
 
 ```
 kit-bot-whatsapp/
 ├─ README.md
-├─ .claude/skills/kit-bot-whatsapp/SKILL.md   # el instalador conversacional
-├─ config/
-│  └─ mi-negocio.example.yaml                  # ejemplo de la configuración
-├─ template/
-│  ├─ system_prompt.template.md               # el "cerebro" del bot (plantilla)
-│  └─ workflow.definition.json                # la estructura del bot en Kapso
-└─ modules/
-   └─ notion/                                  # módulo opcional: memoria + CRM
+└─ skills/
+   └─ kit-bot-whatsapp/          # el skill instalable (autocontenido)
+      ├─ SKILL.md                # el instalador conversacional
+      ├─ config/
+      │  └─ mi-negocio.example.yaml
+      ├─ template/
+      │  ├─ system_prompt.template.md   # el "cerebro" del bot
+      │  └─ workflow.definition.json    # la estructura del bot en Kapso
+      └─ modules/
+         └─ notion/              # módulo opcional: memoria + CRM
 ```
+
+Por debajo, el kit usa los **skills oficiales de Kapso**
+(`gokapso/agent-skills`) para la parte técnica; los instala solo.
 
 ## Privacidad y seguridad
 

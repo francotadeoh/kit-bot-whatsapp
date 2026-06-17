@@ -41,11 +41,17 @@ skill que vayas a usar, corré una vez `npm i`. Estos skills tienen un **"fallba
 path" que NO requiere el CLI de Kapso**: solo necesitan las env vars de abajo, que es
 justo el nivel de fricción que buscamos para público cero-técnico.
 
-## Principios
+## Principios (UX — probados en los skills de La Instalación)
 
 - **La persona es cero-técnica.** No le pidas que edite archivos, escriba JSON ni
-  "prompts". Vos entrevistás y completás todo. Hablá claro, sin jerga.
-- **Un paso por vez.** No abrumes. Confirmá cada fase antes de seguir.
+  "prompts". Vos entrevistás y completás todo. Hablá claro, sin jerga. Puede
+  contestar **dictando audios**; diseñá las preguntas para eso.
+- **Una pregunta a la vez.** Nunca un muro de 5 preguntas juntas. Preguntá, esperá,
+  procesá, y recién ahí avanzá. Un concepto por mensaje.
+- **Validá tras cada fase.** Mostrá lo que armaste y preguntá "¿esto está bien o me
+  falta algo?" antes de seguir.
+- **No dejes nada vacío.** Cargá al menos 2-3 FAQs reales y hacé un test en vivo
+  antes de cerrar. Un bot sin FAQs ni prueba es un bot que nadie usa.
 - **Honestidad sobre la fricción.** Hay 3 cosas que sí o sí hace la persona (abajo).
 - **Nunca inventes datos del negocio.** Si no sabés algo, preguntáselo.
 - **La API key es secreto.** Va en `.env` (gitignored), nunca en chat ni versionada.
@@ -60,10 +66,21 @@ justo el nivel de fricción que buscamos para público cero-técnico.
 
 ---
 
-## FASE 0 — Bienvenida
+## FASE 0 — Bienvenida + preparación
 
-Presentate breve. Explicá qué van a hacer juntos, el mapa de fricción y, si hace
-falta, instalá los skills oficiales (`npx skills add gokapso/agent-skills`).
+1. **Promesa concreta.** Abrí con algo así: *"En unos 15-20 minutos vas a tener un
+   bot de WhatsApp que atiende solo, con tus preguntas frecuentes, tu tono y tus
+   horarios, y que te pasa la conversación cuando de verdad te necesita. Te voy
+   guiando paso a paso; podés contestarme por audio."* Anunciá el mapa de fricción
+   (las 3 cosas que sí o sí hace ella).
+2. **Instalá los skills oficiales de Kapso (silencioso).** Si no están, corré vos:
+   ```bash
+   npx skills add gokapso/agent-skills -y
+   ```
+   y `npm i` una vez en cada carpeta de skill que vayas a usar
+   (`.agents/skills/{automate,integrate,observe}-whatsapp/`). No le hagas escribir
+   esto a la persona: hacelo vos y avisale "ya dejé todo listo por atrás".
+3. Confirmá que quiere arrancar.
 
 ## FASE 1 — Cuenta Kapso + API key
 
@@ -97,18 +114,48 @@ Paso manual de Meta. Para esto, apoyate en el skill **`integrate-whatsapp`**
 
 ## FASE 3 — Entrevista de negocio
 
-Preguntá de a una, en lenguaje natural, y llená `config/mi-negocio.yaml` (base:
-`config/mi-negocio.example.yaml`). Relevá: **nombre + qué vende** (y sitio web
-opcional); **nombre y tono** del asistente; **horarios**; **FAQs** (4-6 mínimo, con
-respuesta — es el cerebro: precios, envíos, pagos, cómo comprar/reservar, etc.);
-**cuándo pasar a humano** + mensaje; **límites** (qué NO debe hacer).
+El objetivo es llenar `config/mi-negocio.yaml` (base: `config/mi-negocio.example.yaml`)
+**conversando**, una pregunta a la vez. Pero antes, una pregunta que puede ahorrar
+casi toda la entrevista:
 
-Al final, leéle un resumen en lenguaje natural de cómo va a atender y confirmá.
-Guardá el `config/mi-negocio.yaml`.
+### 3.0 — ¿Ya tenés tu negocio sistematizado? (puente con La Instalación, OPCIONAL)
+
+Preguntá, natural y sin asumir nada:
+> *"Una antes de arrancar: ¿hiciste (o estás haciendo) el programa La Instalación, o
+> ya tenés tu negocio ordenado en Notion con un 'Centro de Comando' y algún
+> procedimiento (SOP) escrito de cómo atendés? Si sí, lo uso de base y vamos mucho
+> más rápido. Si no, no pasa nada: te hago unas preguntas y lo armamos juntos."*
+
+- **Si NO** (o no entiende la pregunta): seguí derecho a **3.1 (entrevista normal)**.
+  No insistas con la jerga.
+- **Si SÍ → Track Instalación (importás lo que ya construyó):** pedile acceso/links y
+  reutilizá sus artefactos en vez de preguntar de cero:
+  - Su **SOP de atención** y el proceso de atención del Auditor → se vuelven las
+    **FAQs y el guion de respuesta** del bot.
+  - El **vocabulario real** del negocio (Blueprint del Arquitecto) → el **tono y los
+    términos** del prompt.
+  - Su **Centro de Comando / base de Personas en Notion** → la **misma base** que usa
+    el módulo Notion del bot (FASE 5); no crees una nueva, conectá esa.
+  - Los **"momentos donde aparece el dueño" / controles** (Sistematizador) → la regla
+    de **escalamiento a humano**.
+  - Si tenés acceso por MCP a su Notion/Drive, traé esos artefactos vos; si no,
+    pedile que pegue el SOP o comparta el link. Igual **confirmá cada cosa** con ella
+    antes de usarla — completá los huecos preguntando.
+
+### 3.1 — Entrevista (para todos; en Track Instalación, solo lo que falte)
+
+Relevá, una a una: **nombre + qué vende** (y sitio web opcional); **nombre y tono**
+del asistente; **horarios**; **FAQs** (4-6 mínimo, con respuesta — es el cerebro:
+precios, envíos, pagos, cómo comprar/reservar, etc.); **cuándo pasar a humano** +
+mensaje; **límites** (qué NO debe hacer).
+
+Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y confirmá
+("¿esto está bien o me falta algo?"). Guardá el `config/mi-negocio.yaml`.
 
 > ¿Quiere registrar conversaciones/contactos en Notion? Opcional, más valor, más
-> fricción. Si dice que sí, `notion.activar: true` y seguí FASE 5. Si no, mejor para
-> arrancar.
+> fricción. Si dice que sí, `notion.activar: true` y seguí FASE 5. **Si viene por
+> Track Instalación, esta base es su Centro de Comando — conectá esa, no una nueva.**
+> Si no, mejor arrancar sin esto.
 
 ## FASE 4 — Build & deploy (delegado a `automate-whatsapp`)
 
@@ -176,8 +223,17 @@ ancla al `phone_number` verificado por Meta, nunca a lo que el usuario afirme.
 
 ## FASE 7 — Cierre
 
+**Checklist de cierre (no termines si falta alguna):**
+- [ ] Número de WhatsApp conectado y verificado.
+- [ ] Workflow creado, validado (`validate-graph`), activo y con trigger en el número.
+- [ ] Al menos 2-3 FAQs cargadas + tono + horarios + regla de escalamiento.
+- [ ] **Test en vivo exitoso** (una FAQ, un "hola" vago, y un escalamiento).
+
+Recién con todo eso tildado:
 - Resumí qué quedó andando y los límites del bot.
-- Explicá cómo cambiar algo: "decime qué querés ajustar y lo actualizo".
+- Explicá cómo mejorarlo: "cada vez que el bot no sepa responder algo, decímelo y lo
+  sumo a sus preguntas frecuentes" (mismo loop de mejora continua de los skills de
+  La Instalación).
 - Si está en Free, recordá los límites del plan (1 número, ~2.000 msg/mes).
 
 ---
