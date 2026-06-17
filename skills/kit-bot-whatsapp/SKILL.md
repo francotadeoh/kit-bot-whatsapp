@@ -288,3 +288,6 @@ Recién con todo eso tildado:
 - Kapso no tiene RAG nativo: las FAQs van inyectadas en el system prompt.
 - No hay "clonar workflow" nativo: el mecanismo de plantilla es renderizar esta
   plantilla y crear el workflow en la cuenta de la persona. Es lo esperado.
+- **El valor está en el flujo de preguntas**, no en el contenido por defecto. Las
+  respuestas pueden ser escuetas: tu trabajo (y el de los skills de Kapso) es guiar
+  paso a paso hasta que el bot quede completo. No asumas; preguntá lo que falte.
