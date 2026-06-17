@@ -1,8 +1,8 @@
 # 🤖 Kit Bot WhatsApp
 
-Armá tu propio **asistente de WhatsApp para atención al cliente** — sin programar y
-sin pelearte con interfaces. Respondés unas preguntas sobre tu negocio y el kit deja
-el bot andando por vos.
+Armá tu propio **asistente de WhatsApp** — de atención al cliente, asesor de ventas,
+o las dos cosas — sin programar y sin pelearte con interfaces. Respondés unas
+preguntas sobre tu negocio y el kit deja el bot andando por vos.
 
 Funciona sobre [Kapso](https://kapso.ai) (la plataforma que conecta tu número de
 WhatsApp con la IA) y se instala conversando con [Claude Code](https://claude.com/claude-code).
@@ -11,9 +11,10 @@ WhatsApp con la IA) y se instala conversando con [Claude Code](https://claude.co
 
 ## ¿Qué hace el bot?
 
-- Responde las **preguntas frecuentes** de tu negocio 24/7.
+- **Atiende, asesora o vende** según lo que necesites (vos elegís el tipo y el kit lo adapta).
+- Responde con **lo que sabe de tu negocio** 24/7 (FAQs, info de producto, lo que cargues).
 - Mantiene tu **tono** y tus reglas (qué puede y qué no puede decir).
-- **Deriva a una persona** cuando algo lo excede (un reclamo, un pedido especial).
+- **Deriva a una persona** cuando algo lo excede (un reclamo, cerrar una venta, un caso especial).
 - (Opcional) **Recuerda a cada cliente** y registra las conversaciones en tu Notion.
 
 ## ¿Qué necesitás?
@@ -43,10 +44,13 @@ crear la cuenta de Kapso, conectar tu número (un login de Facebook, ~5 min), y
 Eso es todo. Para cambiar algo después (sumar una FAQ, cambiar el tono), volvé a
 abrir Claude Code y decile qué querés ajustar.
 
+El kit te pregunta primero **qué tipo de asistente querés** (atención, ventas o
+mixto) y adapta las preguntas y la personalidad a eso.
+
 > **¿Hiciste el programa La Instalación?** Si ya tenés tu negocio ordenado en Notion
-> (Centro de Comando) y un procedimiento de atención escrito, decíselo al kit cuando
-> te pregunte: usa eso de base — tus procesos se vuelven las respuestas del bot y tu
-> Centro de Comando se vuelve su memoria. No empezás de cero.
+> (Centro de Comando) y un procedimiento escrito, decíselo al kit cuando te pregunte:
+> usa eso de base — tus procesos se vuelven las respuestas del bot y tu Centro de
+> Comando se vuelve su memoria. No empezás de cero.
 
 ## Qué hay adentro
 
@@ -76,11 +80,13 @@ Por debajo, el kit usa los **skills oficiales de Kapso**
   verificado por WhatsApp/Meta, no a lo que el usuario diga ser. Nadie puede pedirle
   datos de otro cliente haciéndose pasar por otra persona.
 
-## Límites de la v1
+## Alcance y límites
 
-- Pensado para **atención al cliente** (responder, orientar, derivar). No toma pagos
-  ni cierra ventas por sí solo.
-- La base de conocimiento son tus FAQs (cuantas más cargues, mejor atiende).
+- Sirve para **atención al cliente, asesoramiento de ventas o mixto**. Lo que el bot
+  hace bien es **conversar, informar, asesorar y derivar** — el cierre final
+  (precio, pago, contrato) lo hace una persona del equipo.
+- La base de conocimiento es lo que vos le cargás (FAQs, info de producto): cuanto
+  más completa, mejor responde. No inventa lo que no sabe — lo deriva.
 
 ---
 

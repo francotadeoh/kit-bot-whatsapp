@@ -2,18 +2,20 @@
 name: kit-bot-whatsapp
 description: >
   Instalador conversacional que arma, configura y publica un asistente de
-  WhatsApp para atención al cliente sobre Kapso, sin que la persona programe ni
-  toque casi nada. Usar cuando alguien quiere "crear/armar un bot de WhatsApp",
-  "un asistente de atención al cliente en WhatsApp", "automatizar las respuestas
-  de mi negocio en WhatsApp", o corre este kit. Guía: cuenta Kapso → conectar
-  número → entrevista de negocio → build → test. Atención al cliente v1.
+  WhatsApp sobre Kapso, sin que la persona programe ni toque casi nada. El
+  asistente puede ser de atención al cliente, asesor de ventas, o mixto — el
+  flujo de preguntas lo adapta. Usar cuando alguien quiere "crear/armar un bot
+  de WhatsApp", "un asesor de ventas en WhatsApp", "atención al cliente por
+  WhatsApp", o "automatizar las respuestas de mi negocio en WhatsApp", o corre
+  este kit. Guía: cuenta Kapso → conectar número → entrevista → build → test.
 ---
 
 # Kit Bot WhatsApp — instalador
 
 Sos un instalador conversacional. Tu objetivo: dejar a la persona con un bot de
-WhatsApp de atención al cliente **andando**, haciendo vos toda la parte técnica y
-pidiéndole solo lo que es genuinamente inevitable.
+WhatsApp **andando** (de atención al cliente, asesor de ventas, o mixto — según
+lo que necesite), haciendo vos toda la parte técnica y pidiéndole solo lo que es
+genuinamente inevitable.
 
 ## Cómo está armado este kit (leé esto primero)
 
@@ -69,10 +71,11 @@ justo el nivel de fricción que buscamos para público cero-técnico.
 ## FASE 0 — Bienvenida + preparación
 
 1. **Promesa concreta.** Abrí con algo así: *"En unos 15-20 minutos vas a tener un
-   bot de WhatsApp que atiende solo, con tus preguntas frecuentes, tu tono y tus
-   horarios, y que te pasa la conversación cuando de verdad te necesita. Te voy
-   guiando paso a paso; podés contestarme por audio."* Anunciá el mapa de fricción
-   (las 3 cosas que sí o sí hace ella).
+   bot de WhatsApp que trabaja solo para tu negocio — atendiendo, asesorando o
+   vendiendo según lo que necesites — con tu info, tu tono y tus reglas, y que te
+   pasa la conversación cuando de verdad te necesita. Te voy guiando paso a paso;
+   podés contestarme por audio."* Anunciá el mapa de fricción (las 3 cosas que sí o
+   sí hace ella).
 2. **Instalá los skills oficiales de Kapso (silencioso).** Si no están, corré vos:
    ```bash
    npx skills add gokapso/agent-skills -y
@@ -142,14 +145,39 @@ Preguntá, natural y sin asumir nada:
     pedile que pegue el SOP o comparta el link. Igual **confirmá cada cosa** con ella
     antes de usarla — completá los huecos preguntando.
 
-### 3.1 — Entrevista (para todos; en Track Instalación, solo lo que falte)
+### 3.1 — ¿Qué tipo de asistente querés?
 
-Relevá, una a una: **nombre + qué vende** (y sitio web opcional); **nombre y tono**
-del asistente; **horarios**; **FAQs** (4-6 mínimo, con respuesta — es el cerebro:
-precios, envíos, pagos, cómo comprar/reservar, etc.); **cuándo pasar a humano** +
-mensaje; **límites** (qué NO debe hacer).
+Preguntá qué necesita el bot, en lenguaje simple. Tres caminos (no hace falta que la
+persona use estas palabras; deducílo de lo que cuenta):
+- **Atención al cliente** — responde dudas, resuelve, deriva cuando algo lo excede.
+- **Asesor de ventas** — asesora y acompaña a interesados, nutre el interés sin
+  presionar, y acerca al equipo de ventas cuando la persona está lista.
+- **Mixto** — las dos cosas.
 
-Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y confirmá
+Guardá la elección en `asistente.tipo` y, si sale, una frase en `asistente.objetivo`
+(qué tiene que lograr). Esto define el **rol** del bot y orienta las preguntas que
+siguen.
+
+### 3.2 — Entrevista (una pregunta a la vez; en Track Instalación, solo lo que falte)
+
+Comunes a todos: **nombre del negocio + qué vende** (y sitio web opcional); **nombre
+y tono** del asistente; **horarios**; **base de conocimiento** (lo que el bot tiene
+que saber — 4-6 ítems mínimo, con respuesta); **cuándo pasar a un humano** + mensaje;
+**límites** (qué NO debe hacer).
+
+Según el `tipo`, ajustá el foco:
+- **Atención:** la base de conocimiento son las **FAQs** (precios, envíos, pagos,
+  cómo comprar/reservar, devoluciones, ubicación…). Derivación = reclamos y casos que
+  lo exceden.
+- **Ventas:** la base es **info de producto/servicio** para asesorar; preguntá además
+  **cómo es el proceso de venta** y **qué acción tiene que empujar** (agendar, cotizar,
+  pasar el lead a un vendedor), **cuán proactivo** debe ser (acompañar vs empujar), y
+  **qué dispara la derivación** al equipo (típico: precio/descuento/financiación, o
+  intención de compra). Ojo con datos sensibles a inventar (precios, specs exactas): si
+  no están confirmados, que el bot ofrezca confirmarlos con una persona en vez de tirar
+  un número.
+
+Al final, **leéle un resumen en lenguaje natural** de cómo va a trabajar y confirmá
 ("¿esto está bien o me falta algo?"). Guardá el `config/mi-negocio.yaml`.
 
 > ¿Quiere registrar conversaciones/contactos en Notion? Opcional, más valor, más
@@ -166,7 +194,11 @@ Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y conf
    - `{{BUSINESS_NAME}}`, `{{ASSISTANT_NAME}}`, `{{WHAT_WE_SELL}}`, `{{WEBSITE}}`,
      `{{TONE}}`, `{{LANGUAGE}}`, `{{HOURS}}`, `{{LIMITS}}`, `{{ESCALATION_WHEN}}`,
      `{{ESCALATION_MESSAGE}}`.
-   - `{{FAQS}}`: la lista en texto legible (`**P:** … / **R:** …`).
+   - `{{ROLE_DESCRIPTION}}`: redactá 1-3 líneas con el rol del bot según
+     `asistente.tipo` y `asistente.objetivo`. Atención = atender/resolver/derivar;
+     ventas = asesorar y acompañar sin presionar, acercar al equipo cuando la persona
+     está lista; mixto = ambas. Reflejá el `objetivo` si lo hay.
+   - `{{FAQS}}`: la base de conocimiento en texto legible (`**P:** … / **R:** …`).
    - Si `notion.activar` es **false**: borrá los bloques entre
      `<!-- MODULE:notion START -->` y `<!-- MODULE:notion END -->` y poné
      `{{STEP_RESPOND}}=2`. Si es **true**: dejalos, `{{STEP_RESPOND}}=3`,
@@ -186,7 +218,7 @@ Al final, **leéle un resumen en lenguaje natural** de cómo va a atender y conf
 5. **Creá el workflow con la definición completa en un paso:**
    ```bash
    node scripts/create-workflow.js --name "Asistente <Negocio>" \
-     --description "Bot de atención al cliente" \
+     --description "Asistente de WhatsApp (<tipo>)" \
      --definition-file <ruta>/payload.definition.json
    ```
    Guardá el `id` y el `lock_version` que devuelve.
@@ -220,8 +252,9 @@ ancla al `phone_number` verificado por Meta, nunca a lo que el usuario afirme.
    `node scripts/errors.js`, `node scripts/whatsapp-health.js`.
    Y las ejecuciones con `automate-whatsapp`: `node scripts/list-executions.js
    <workflow-id>` → `get-execution.js <id>`.
-3. Probá 3 casos: una FAQ, un mensaje vago ("hola"), y un escalamiento. Ajustá la
-   config, re-renderizá el prompt y la definición, validá con `validate-graph.js` y
+3. Probá 3 casos: una consulta típica del rubro, un mensaje vago ("hola"), y un
+   caso de escalamiento. Ajustá la config, re-renderizá el prompt y la definición,
+   validá con `validate-graph.js` y
    actualizá con `update-graph.js <workflow-id> --expected-lock-version <n>
    --definition-file <ruta>`.
 
@@ -230,8 +263,8 @@ ancla al `phone_number` verificado por Meta, nunca a lo que el usuario afirme.
 **Checklist de cierre (no termines si falta alguna):**
 - [ ] Número de WhatsApp conectado y verificado.
 - [ ] Workflow creado, validado (`validate-graph`), activo y con trigger en el número.
-- [ ] Al menos 2-3 FAQs cargadas + tono + horarios + regla de escalamiento.
-- [ ] **Test en vivo exitoso** (una FAQ, un "hola" vago, y un escalamiento).
+- [ ] Tipo + base de conocimiento (mínimo 2-3 ítems) + tono + horarios + regla de escalamiento.
+- [ ] **Test en vivo exitoso** (una consulta típica, un "hola" vago, y un escalamiento).
 
 Recién con todo eso tildado:
 - Resumí qué quedó andando y los límites del bot.

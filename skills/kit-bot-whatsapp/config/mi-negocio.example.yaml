@@ -15,8 +15,15 @@ negocio:
 
 asistente:
   nombre: "Espi"           # cómo se presenta el bot ("Hola, soy Espi 👋")
+  # Tipo de asistente: "atención al cliente" | "ventas" | "mixto".
+  # Define el rol y cómo se comporta (atender/resolver vs asesorar/acompañar).
+  tipo: "atención al cliente"
+  # Qué tiene que lograr el bot, en una frase. Ej. (atención) "resolver dudas y
+  # que el cliente se vaya contento"; (ventas) "asesorar sin presionar y acercar
+  # al equipo de ventas cuando la persona está lista".
+  objetivo: "resolver las dudas frecuentes y que el cliente se vaya contento"
   # Tono de la conversación. Ej: "cálido y directo", "formal y profesional",
-  # "divertido y cercano".
+  # "aspiracional y cercano", "divertido".
   tono: "cálido y directo"
   idioma: "español rioplatense"
 
