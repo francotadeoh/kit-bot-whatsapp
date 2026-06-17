@@ -28,29 +28,42 @@ crear la cuenta de Kapso, conectar tu número (un login de Facebook, ~5 min), y
 —cuando crezcas— cargar créditos. El plan gratis de Kapso alcanza para arrancar
 (1 número + ~2.000 mensajes/mes).
 
-## Cómo se usa
+## 🚀 Creá tu bot en 3 pasos
 
-**Un comando, y después solo hablás.**
+**1. Copiá este mensaje y pegáselo a Claude Code** (después le podés contestar por **audio**):
 
-1. Instalá el kit (copiá y pegá esta línea una vez):
-   ```bash
-   npx skills add francotadeoh/kit-bot-whatsapp
-   ```
-2. Abrí Claude Code y decile (podés por **audio**): **"armá mi bot de WhatsApp"**.
-3. Seguí la conversación: el kit instala solo lo que necesita de Kapso, te guía para
-   conectar tu número, te **entrevista sobre tu negocio** (le dictás, él arma la
-   config), construye el bot, lo conecta y lo prueba con vos.
+> Instalá el kit de este repo y guiame para armar mi bot de WhatsApp paso a paso:
+> https://github.com/francotadeoh/kit-bot-whatsapp
 
-Eso es todo. Para cambiar algo después (sumar una FAQ, cambiar el tono), volvé a
-abrir Claude Code y decile qué querés ajustar.
+**2. Respondé las preguntas.** Claude te va guiando: qué tipo de bot querés (atención,
+ventas o mixto), conectar tu número de WhatsApp y contarle de tu negocio. Él arma,
+conecta y publica todo por vos.
 
-El kit te pregunta primero **qué tipo de asistente querés** (atención, ventas o
-mixto) y adapta las preguntas y la personalidad a eso.
+**3. Probá tu bot.** Mandале un WhatsApp y mirá cómo responde. ¿Algo no te cierra?
+Decíselo a Claude y lo ajusta al toque.
+
+Eso es todo. Para cambiar algo más adelante (sumar una respuesta, cambiar el tono),
+abrí Claude Code y decile qué querés ajustar.
+
+> 💡 **Atajo técnico** (opcional): corré `npx skills add francotadeoh/kit-bot-whatsapp`
+> y después decile a Claude *"armá mi bot de WhatsApp"*.
 
 > **¿Hiciste el programa La Instalación?** Si ya tenés tu negocio ordenado en Notion
 > (Centro de Comando) y un procedimiento escrito, decíselo al kit cuando te pregunte:
 > usa eso de base — tus procesos se vuelven las respuestas del bot y tu Centro de
 > Comando se vuelve su memoria. No empezás de cero.
+
+## Para Claude (si alguien te pasó este link)
+
+Si una persona te compartió este repositorio y te pidió ayuda para instalarlo o armar
+su bot de WhatsApp:
+
+1. Ejecutá `npx skills add francotadeoh/kit-bot-whatsapp` (instala este kit; y, si
+   faltan, los skills oficiales de Kapso `gokapso/agent-skills`).
+2. Activá el skill **`kit-bot-whatsapp`** y seguí su `SKILL.md` al pie.
+3. Guiá a la persona **paso a paso, cero-técnico, una pregunta a la vez**. Puede
+   contestarte por audio. No le pidas que edite archivos ni que escriba comandos: la
+   parte técnica la hacés vos.
 
 ## Qué hay adentro
 
